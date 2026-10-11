@@ -92,7 +92,12 @@ class GeminiProvider(ChatProvider):
                     for format_attempt in range(2):
                         try:
                             response = await asyncio.wait_for(
-                                model.generate_content_async(contents),
+                                model.generate_content_async(
+                                    contents,
+                                    request_options=genai.types.RequestOptions(
+                                        retry=None, timeout=float(config.timeout)
+                                    ),
+                                ),
                                 timeout=float(config.timeout),
                             )
                             break
@@ -107,6 +112,7 @@ class GeminiProvider(ChatProvider):
                                 **model_kwargs,
                             )
                             setattr(model, "_async_client", native_client)
+
 
                     if not response.candidates:
                         raise ProviderResponseError(
@@ -167,6 +173,10 @@ class GeminiProvider(ChatProvider):
                         details=str(exc),
                     ) from exc
                 except google_exceptions.ServiceUnavailable as exc:
+                    if attempt < attempts - 1:
+                        await asyncio.sleep(backoff)
+                        backoff *= BACKOFF_MULTIPLIER
+                        continue
                     raise ProviderConnectionError(
                         provider="gemini",
                         endpoint=endpoint,
