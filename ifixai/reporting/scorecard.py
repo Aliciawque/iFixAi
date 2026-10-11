@@ -1087,7 +1087,7 @@ def render_consistency_warnings(result: TestRunResult) -> str:
         return ""
     lines = [
         "## Consistency Warnings\n",
-        "> Cross-hook inconsistencies detected. Affected benchmark scores are capped at 50%.\n",
+        "> Cross-hook verification findings are listed below. Confirmed inconsistencies cap affected inspection scores at 50%; incomplete checks retain completed inspection scores.\n",
     ]
     for warning in result.validation_warnings:
         lines.append(f"- {warning}")
