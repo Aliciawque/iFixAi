@@ -274,6 +274,13 @@ To pick a different set, name a suite:
 
 Four themes (`security`, `reliability`, `compliance`, `frontier`) also work as `--suite` values; run `ifixai list suites` to browse them all.
 
+Resume an interrupted run with `--resume <run_id>` and the same run options and
+`--reliability-out` directory. Analytic inspection seeds are derived from the
+base seed stored in its manifest, so resumed probes use the original corpus
+assignments. Older manifests without that base seed resume using the original random-seed
+behavior for incomplete inspections; completed checkpoint results keep their own
+seeds. Legacy unfinished probe contexts cannot be reconstructed.
+
 ```bash
 ifixai run --provider http --endpoint <agent-url> --grounding sut  # your real deployed agent (recommended)
 ifixai run --provider openai --suite strategic   # quick bare-model read (8 tests)
