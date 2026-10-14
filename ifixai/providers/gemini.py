@@ -209,12 +209,12 @@ class GeminiProvider(ChatProvider):
 def _format_messages(
     messages: list[ChatMessage],
 ) -> GeminiMessages:
-    system_instruction = ""
+    system_instructions: list[str] = []
     contents: list[dict] = []
 
     for msg in messages:
         if msg.role == "system":
-            system_instruction = msg.content
+            system_instructions.append(msg.content)
         else:
             gemini_role = "model" if msg.role == "assistant" else "user"
             contents.append(
@@ -224,7 +224,7 @@ def _format_messages(
                 }
             )
 
-    return GeminiMessages(system_instruction=system_instruction, contents=contents)
+    return GeminiMessages(system_instruction="\n".join(system_instructions), contents=contents)
 
 
 def _json_mode_unsupported(exc: google_exceptions.InvalidArgument) -> bool:
