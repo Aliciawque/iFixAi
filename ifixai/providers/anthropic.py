@@ -70,6 +70,10 @@ class AnthropicProvider(ChatProvider):
     async def aclose(self) -> None:
         await close_cached_clients(self._clients)
 
+    def accepts_temperature(self, model: str | None) -> bool:
+        # As far as this run knows: a model joins _NO_TEMPERATURE_MODELS on its first 400.
+        return (model or DEFAULT_MODEL) not in _NO_TEMPERATURE_MODELS
+
     async def send_message(
         self,
         messages: list[ChatMessage],
